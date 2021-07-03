@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleTranslate", "GoogleTranslate\GoogleTranslate.csproj", "{AB4571BB-4FE5-4987-832E-24344F2191E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTranslator", "TestTranslator\TestTranslator.csproj", "{945D7B15-EE45-4759-8631-E2CDA5B59933}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zlib.net", "zlib\zlib.net.csproj", "{0C89B7A2-A218-49E4-B545-5B044A45F977}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB4571BB-4FE5-4987-832E-24344F2191E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB4571BB-4FE5-4987-832E-24344F2191E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB4571BB-4FE5-4987-832E-24344F2191E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB4571BB-4FE5-4987-832E-24344F2191E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{945D7B15-EE45-4759-8631-E2CDA5B59933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{945D7B15-EE45-4759-8631-E2CDA5B59933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{945D7B15-EE45-4759-8631-E2CDA5B59933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{945D7B15-EE45-4759-8631-E2CDA5B59933}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C89B7A2-A218-49E4-B545-5B044A45F977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C89B7A2-A218-49E4-B545-5B044A45F977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C89B7A2-A218-49E4-B545-5B044A45F977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C89B7A2-A218-49E4-B545-5B044A45F977}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

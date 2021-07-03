@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB4571BB-4FE5-4987-832E-24344F2191E6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Translator</RootNamespace>
+    <AssemblyName>Translator</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compression\HuffmanEncoder.cs" />
+    <Compile Include="Crypto\blowfishPckVer.cs" />
+    <Compile Include="CacheTrans.cs" />
+    <Compile Include="Crypto\blowfishIntVer.cs" />
+    <Compile Include="Crypto\CRC32.cs" />
+    <Compile Include="Crypto\crc64.cs" />
+    <Compile Include="Crypto\MT19937.cs" />
+    <Compile Include="IO\BitStream.cs" />
+    <Compile Include="IO\CustomBinaryReader.cs" />
+    <Compile Include="IO\CustomBinaryWriter.cs" />
+    <Compile Include="IO\Extensions.cs" />
+    <Compile Include="IO\FileFunc.cs" />
+    <Compile Include="Form_EditText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_EditText.Designer.cs">
+      <DependentUpon>Form_EditText.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_regex_replace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_regex_replace.Designer.cs">
+      <DependentUpon>Form_regex_replace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_replace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_replace.Designer.cs">
+      <DependentUpon>Form_replace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_select_var.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_select_var.Designer.cs">
+      <DependentUpon>Form_select_var.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Compression\LzWindowDictionary.cs" />
+    <Compile Include="OpenFolderDialog.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TextTool.cs" />
+    <Compile Include="Compression\LZSS.cs" />
+    <Compile Include="TranslationConfig.cs" />
+    <Compile Include="TranslationDictonary.cs" />
+    <Compile Include="Translator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VNRScriptParser.cs" />
+    <Compile Include="Compression\zlib.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DelRazdel.ico" />
+    <None Include="Replace.ico" />
+    <None Include="Buffer.ico" />
+    <Content Include="ReplaceChar.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="ReplaceIcon.ico" />
+    <Content Include="ReplaceNames.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReplaceText.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="SaveIcon.ico" />
+    <None Include="TestIcon.ico" />
+    <None Include="SetRazdel.ico" />
+    <Content Include="VNRScript\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Form_EditText.resx">
+      <DependentUpon>Form_EditText.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_regex_replace.resx">
+      <DependentUpon>Form_regex_replace.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_replace.resx">
+      <DependentUpon>Form_replace.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_select_var.resx">
+      <DependentUpon>Form_select_var.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\zlib\zlib.net.csproj">
+      <Project>{0c89b7a2-a218-49e4-b545-5b044a45f977}</Project>
+      <Name>zlib.net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
