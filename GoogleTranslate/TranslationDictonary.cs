@@ -21,7 +21,7 @@ namespace Translator
 
         }
 
-        public List<NAMES> LoadDictonary(string dictPath)
+        public List<NAMES> LoadDictonary(string dictPath, bool checkUnique = true)
         {
             List<NAMES> dict = new List<NAMES>();
             if (!File.Exists(dictPath))
@@ -29,19 +29,30 @@ namespace Translator
                 File.Create(dictPath).Close();
             }
             string[] lines = File.ReadAllLines(dictPath);
-            List<string> nLines = new List<string>();
-            for (int i = 0; i < lines.Length; i++)
+            if (checkUnique)
             {
-                if (!nLines.Contains(lines[i]))
-                    nLines.Add(lines[i]);
+                List<string> nLines = new List<string>();
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (!nLines.Contains(lines[i]))
+                        nLines.Add(lines[i]);
+                }
+                for (int i = 0; i < nLines.Count; i++)
+                {
+                    dict.Add(new NAMES(nLines[i], splitChar));
+                }
+                dict = TestDictonary(dict, dictPath);
+                dict.Sort((y, x) => x.orig_name.Length.CompareTo(y.orig_name.Length));
+                return dict;
             }
-            for (int i = 0; i < nLines.Count; i++)
+            else
             {
-                dict.Add(new NAMES(nLines[i], splitChar));
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    dict.Add(new NAMES(lines[i], splitChar));
+                }
+                return dict;
             }
-            dict = TestDictonary(dict, dictPath);
-            dict.Sort((y, x) => x.orig_name.Length.CompareTo(y.orig_name.Length));
-            return dict;
         }
 
         public NAMES FindItem(List<NAMES> dict, string original)

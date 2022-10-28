@@ -185,9 +185,9 @@ namespace Translator
 
         private string dowload_page(string hex, string from, string to)
         {
-            //Задержка для снижения риска отображения recapcha
-            int sleepVal = r.Next(500, 1500);
-            Thread.Sleep(sleepVal);
+            ////Задержка для снижения риска отображения recapcha
+            //int sleepVal = r.Next(500, 1500);
+            //Thread.Sleep(sleepVal);
             int count = 0;
             label1:
             string val = string.Format(googleTemplateUrl, from, to, hex);

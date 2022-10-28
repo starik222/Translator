@@ -435,6 +435,12 @@ namespace Translator
 
         public string TranslateText(string text, string ToLang, bool UseReplaceText = true)
         {
+            return TranslateText(text, "ja", ToLang, UseReplaceText);
+        }
+
+
+        public string TranslateText(string text, string FromLang, string ToLang, bool UseReplaceText = true)
+        {
             string ntext = "";
             if (string.IsNullOrWhiteSpace(text))
                 return text;
@@ -448,7 +454,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -475,7 +481,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -491,7 +497,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -507,7 +513,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -521,7 +527,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -928,6 +934,31 @@ namespace Translator
                 }
             }
             return lines.ToArray();
+        }
+
+        public string RemoveRepeatingChars(string text, int repeatCount)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            int rep = 0;
+            char c = (char)0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != c)
+                {
+                    c = text[i];
+                    stringBuilder.Append(text[i]);
+                    rep = 0;
+                }
+                else
+                {
+                    if (rep < repeatCount)
+                    {
+                        rep++;
+                        stringBuilder.Append(text[i]);
+                    }
+                }
+            }
+            return stringBuilder.ToString();
         }
 
 

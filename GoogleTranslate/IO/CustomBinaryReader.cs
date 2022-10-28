@@ -14,6 +14,12 @@ namespace Translator.IO
         public CustomBinaryReader(Stream input) : base(input) { }
         public CustomBinaryReader(Stream input, Encoding encoding) : base(input, encoding) { }
 
+        public long Position
+        {
+            get => BaseStream.Position;
+            set => BaseStream.Position = value;
+        }
+        private long oldPosition = 0;
 
         public object ReadStruct(Type t)
         {
@@ -25,10 +31,145 @@ namespace Translator.IO
             return temp;
         }
 
+        public long Seek(long offset, SeekOrigin origin)
+        {
+            return BaseStream.Seek(offset, origin);
+        }
+
+
+        public T ReadGenericValue<T>(long offset, SeekOrigin origin, bool BE = false, bool returnOldPos = false)
+        {
+            oldPosition = Position;
+            Seek(offset, origin);
+            Type tType = typeof(T);
+            object val = 0;
+
+            if (tType == typeof(byte))
+            {
+                val = ReadByte();
+            }
+            else if (tType == typeof(sbyte))
+            {
+                val = ReadSByte();
+            } 
+            else if (!BE)
+            {
+                if (tType == typeof(Int16))
+                {
+                    val = ReadInt16();
+                }
+                else if (tType == typeof(Int32))
+                {
+                    val = ReadInt32();
+                }
+                else if (tType == typeof(Int64))
+                {
+                    val = ReadInt64();
+                }
+                else if (tType == typeof(UInt16))
+                {
+                    val = ReadUInt16();
+                }
+                else if (tType == typeof(UInt32))
+                {
+                    val = ReadUInt32();
+                }
+                else if (tType == typeof(UInt64))
+                {
+                    val = ReadUInt64();
+                }
+                else if (tType == typeof(Single))
+                {
+                    val = ReadSingle();
+                }
+                else
+                {
+                    throw new Exception("Неподдерживаемый тип!");
+                }
+            }
+            else
+            {
+                if (tType == typeof(Int16))
+                {
+                    val = ReadInt16BE();
+                }
+                else if (tType == typeof(Int32))
+                {
+                    val = ReadInt32BE();
+                }
+                else if (tType == typeof(Int64))
+                {
+                    val = ReadInt64BE();
+                }
+                else if (tType == typeof(UInt16))
+                {
+                    val = ReadUInt16BE();
+                }
+                else if (tType == typeof(UInt32))
+                {
+                    val = ReadUInt32BE();
+                }
+                else if (tType == typeof(UInt64))
+                {
+                    val = ReadUInt64BE();
+                }
+                else if (tType == typeof(Single))
+                {
+                    val = ReadSingleBE();
+                }
+                else
+                {
+                    throw new Exception("Неподдерживаемый тип!");
+                }
+            }
+
+            if (returnOldPos)
+            {
+                Position = oldPosition;
+            }
+            return (T)val;
+        }
+
+        public Single ReadSingleBE()
+        {
+            byte[] bytes = ReadBytes(4);
+            Array.Reverse(bytes);
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        public Int16 ReadInt16BE()
+        {
+            byte[] bytes = ReadBytes(2);
+            return (Int16)(bytes[0] << 8 | bytes[1]);
+        }
+
+        public UInt16 ReadUInt16BE()
+        {
+            byte[] bytes = ReadBytes(2);
+            return (UInt16)(bytes[0] << 8 | bytes[1]);
+        }
+
         public Int32 ReadInt32BE()
         {
             byte[] bytes = ReadBytes(4);
             return bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
+        }
+
+        public UInt32 ReadUInt32BE()
+        {
+            byte[] bytes = ReadBytes(4);
+            return (UInt32)(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3]);
+        }
+
+        public Int64 ReadInt64BE()
+        {
+            byte[] data = ReadBytes(8);
+            return data[0] << 56 | data[1] << 48 | data[2] << 40 | data[3] << 32 | data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7];
+        }
+        public UInt64 ReadUInt64BE()
+        {
+            byte[] data = ReadBytes(8);
+            return (UInt64)(data[0] << 56 | data[1] << 48 | data[2] << 40 | data[3] << 32 | data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7]);
         }
 
         public byte[] ReadToEnd()
@@ -244,6 +385,27 @@ namespace Translator.IO
         public sbyte[] ReadSBytes(int count)
         {
             return ReadArray<SByte>(this, new Func<SByte>(ReadSByte), count);
+        }
+
+
+        private enum cType
+        {
+            i8,
+            i16,
+            i32,
+            i64,
+            u8,
+            u16,
+            u32,
+            u64, 
+            i8be,
+            i16be,
+            i32be,
+            i64be,
+            u8be,
+            u16be,
+            u32be,
+            u64be
         }
     }
 }
