@@ -12,7 +12,7 @@ using Translator.IO;
 
 namespace Translator
 {
-    public class GoogleTranslatorV2
+    public class GoogleTranslatorV2 : IDisposable
     {
         private CacheTrans cache;
         private string ch_zero;
@@ -128,6 +128,12 @@ namespace Translator
                 res += text.Substring(index);
             }
             return res;
+        }
+
+        public void Dispose()
+        {
+            cache.Close();
+            client.Dispose();
         }
     }
 }
