@@ -110,9 +110,8 @@ namespace Translator
                     if (x_index == -1 && y_index <= 0)
                         return;
                     string text = dataGridView1[y_index, x_index].Value.ToString();
-                    GoogleTrans.TranslateInfo ti = gt.Translate(text, "ja", "ru", true);
-                    textBox1.Text = ti.output_text;
-                    textBox2.Text = ti.translit;
+                    textBox1.Text = gt.Translate(text, "ja", "ru");
+                    //textBox2.Text = ti.translit;
                     //textBox3.Text = mt.Translate(text, "ja", "ru");
                 }
             }

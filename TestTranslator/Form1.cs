@@ -8,6 +8,10 @@ using System.Text;
 using System.Windows.Forms;
 using Translator;
 using System.Text.RegularExpressions;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 
 namespace TestTranslator
 {
@@ -62,7 +66,7 @@ namespace TestTranslator
         {
             string test ="「お金の問題は気にしなくても大丈夫ですよ。私は貴方が怪我をしてしまうことの方が辛い」";
             TextTool tools = new TextTool(Application.StartupPath);
-            tools.TranslateText(test, TextTool.TransMethod.JaRu);
+            tools.TranslateText(test, "ja", "ru");
 
         }
 
@@ -74,8 +78,66 @@ namespace TestTranslator
 
         private void button7_Click(object sender, EventArgs e)
         {
-            YandexTranslate yandex = new YandexTranslate();
-            string text = yandex.Translate("新一", "ja", "ru");
+
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            DeeplTranslator translator = new DeeplTranslator();
+            translator.Translate("EN", "RU", "test translation");
+            //CustomDeeplClientTCP webClientTCP = new CustomDeeplClientTCP();
+            //webClientTCP.OpenConnection("https://www2.deepl.com/jsonrpc");
+            //webClientTCP.SendData("");
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            string serverName = "google.com";
+            TcpClient client = new TcpClient(serverName, 443);
+            //Console.WriteLine("Client connected.");
+            // Create an SSL stream that will close the client's stream.
+            SslStream sslStream = new SslStream(
+                client.GetStream(),
+                false
+                );
+            // The server name must match the name on the server certificate.
+            try
+            {
+                sslStream.AuthenticateAsClient(serverName);
+
+                byte[] buffer = new byte[2048];
+                int bytes;
+                byte[] request = Encoding.UTF8.GetBytes(String.Format("GET https://{0}/  HTTP/1.1\r\nHost: {0}\r\n\r\n", serverName));
+                sslStream.Write(request, 0, request.Length);
+                sslStream.Flush();
+                StringBuilder sb = new StringBuilder();
+                // Read response
+                do
+                {
+                    bytes = sslStream.Read(buffer, 0, buffer.Length);
+                    sb.Append(Encoding.UTF8.GetString(buffer, 0, bytes));
+                } while (bytes == 2048);
+
+            }
+            catch (AuthenticationException ex)
+            {
+                Console.WriteLine("Exception: {0}", ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner exception: {0}", ex.InnerException.Message);
+                }
+                Console.WriteLine("Authentication failed - closing the connection.");
+                client.Close();
+                return;
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            GoogleTranslator googleTranslator = new GoogleTranslator(Application.StartupPath);
+            Task<string> t = googleTranslator.Translate("test string (as test=word&car)", "en", "ru");
+            t.Wait();
+            string res = t.Result;
         }
     }
 }

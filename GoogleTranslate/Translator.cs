@@ -57,10 +57,28 @@ namespace Translator
             trtext = null;
             cache = new CacheTrans(AppPath);
         }
-        //public void ClearCache()
-        //{
-        //    cache.ClearCache();
-        //}
+
+
+        private CacheTrans.Lang GetLang(string lang)
+        {
+            string nLang = string.Empty;
+            switch (lang)
+            {
+                case "zh-CN":
+                    nLang = "zhCN";
+                    break;
+                case "zh-TW":
+                    nLang = "zhTW";
+                    break;
+                case "mni-Mtei":
+                    nLang = "mniMtei";
+                    break;
+                default:
+                    nLang = lang; 
+                    break;
+            }
+            return (CacheTrans.Lang)Enum.Parse(typeof(CacheTrans.Lang), nLang);
+        }
 
         /// <summary>
         /// Перевод текста с указанного языка
@@ -72,20 +90,8 @@ namespace Translator
         public string Translate(string str, string from, string to)
         {
             string res = "";
-            string res_translit = "";
-            CacheTrans.Lang lg;
-            switch (to)
-            {
-                case "ru": lg = CacheTrans.Lang.ru;
-                    break;
-                case "en": lg = CacheTrans.Lang.en;
-                    break;
-                case "ja": lg = CacheTrans.Lang.jp;
-                    break;
-                default: lg = CacheTrans.Lang.ru;
-                    break;
-            }
-            if (cache.IndexOf(str, out res, out res_translit, lg))
+            CacheTrans.Lang lg = GetLang(to);
+            if (cache.IndexOf(str, out res, out _, lg))
             {
                 return res;
             }
@@ -115,79 +121,18 @@ namespace Translator
         /// <returns>Возвращает переведенный текст</returns>
         public string Translate(string str, string from)
         {
-            string res = "";
-            string res_translit = "";
-            if (cache.IndexOf(str, out res, out res_translit, CacheTrans.Lang.ru))
-            {
-                return res;
-            }
-            string hex;
-            string final_str = "";
-            hex = ConvertStringToHex(str, Encoding.UTF8);
-            for (int i = 0; i < hex.Length; i = i + 2)
-            {
-                final_str += "%" + hex[i] + hex[i + 1];
-            }
-            res = dowload_page(final_str, from, "ru");
-            if (!res.Equals("error"))
-            {
-                cache.Add(str, res, "-0123456789-", CacheTrans.Lang.ru);
-                return res;
-            }
-            else
-                return str;
+            return Translate(str, from, "ru");
         }
 
-        /// <summary>
-        /// Перевод текста с указанного языка
-        /// </summary>
-        /// <param name="str">Строка для перевода</param>
-        /// <param name="from">Указывает, с какого языка происходит перевод(например eu)</param>
-        /// <param name="to">Указывает, на какой язык происходит перевод(например ru)</param>
-        /// <param name="translit">Указывает, нужен ли транслит</param>
-        /// <returns>Возвращает переведенный текст</returns>
-        public TranslateInfo Translate(string str, string from, string to, bool translit)
-        {
-            string res = "";
-            string res_translit = "";
-            CacheTrans.Lang lg;
-            switch (to)
-            {
-                case "ru": lg = CacheTrans.Lang.ru;
-                    break;
-                case "en": lg = CacheTrans.Lang.en;
-                    break;
-                case "ja": lg = CacheTrans.Lang.jp;
-                    break;
-                default: lg = CacheTrans.Lang.ru;
-                    break;
-            }
-            if (cache.IndexOf(str, out res, out res_translit, lg))
-            {
-                return new TranslateInfo(res,res_translit);
-            }
-            string hex;
-            string final_str = "";
-            hex = ConvertStringToHex(str, Encoding.UTF8);
-            for (int i = 0; i < hex.Length; i = i + 2)
-            {
-                final_str += "%" + hex[i] + hex[i + 1];
-            }
-            TranslateInfo ti = dowload_page(final_str, from, to, translit);
-            if (isTranslated)
-                if (ti.output_text != null && ti.translit != null)
-                    cache.Add(str, ti.output_text, ti.translit, lg);
-            return ti;
-        }
 
         string googleTemplateUrl = "https://translate.google.com/m?hl=&sl={0}&tl={1}&ie=UTF-8&q={2}";
         Random r = new Random();
 
         private string dowload_page(string hex, string from, string to)
         {
-            //Задержка для снижения риска отображения recapcha
-            int sleepVal = r.Next(500, 1500);
-            Thread.Sleep(sleepVal);
+            ////Задержка для снижения риска отображения recapcha
+            //int sleepVal = r.Next(500, 1500);
+            //Thread.Sleep(sleepVal);
             int count = 0;
             label1:
             string val = string.Format(googleTemplateUrl, from, to, hex);
@@ -305,95 +250,7 @@ namespace Translator
             }
             return res;
         }
-        [Obsolete("Использование функции с транслитом больше не поддерживается")]
-        private TranslateInfo dowload_page(string hex, string from, string to, bool translit)
-        {
-            int count = 0;
-            label1:
-            TranslateInfo ti = new TranslateInfo();
-            string val = string.Format(googleTemplateUrl, from, to, hex);
-            // string val = "https://translate.google.ru/translate_t?hl=&ie=UTF-8&text=" + hex + "&sl="+from+"&tl="+to;
-            HttpWebRequest webreque = (HttpWebRequest)WebRequest.Create(val);
-            //webreque.UserAgent = "Opera/9.80 (Windows NT 5.1; U; MRA 5.7 (build 03797); ru) Presto/2.10.229 Version/11.60";
-            //webreque.UserAgent = "Opera / 9.80(J2ME / MIDP; Opera Mini/ 5.1.21214 / 28.2725; U; ru) Presto / 2.8.119 Version / 11.10";
-            //webreque.Accept = "*/*";
-            webreque.UserAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0";
-            webreque.Timeout = 20000;
-            HttpWebResponse webrespon;
-            string str;
-            try
-            {
-                webrespon = (HttpWebResponse)webreque.GetResponse();
-                StreamReader str_read = new StreamReader(webrespon.GetResponseStream(), Encoding.UTF8);
-                str = str_read.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                err = ex.Message;
-                istranslated = false;
-                return ti;
-            }
-            try
-            {
-                //String extracted = str.GetBetween("class=\"t0\">", "</div>");
-                String extracted = str.GetBetween("class=\"result-container\">", "</div>");
-                if (string.IsNullOrEmpty(extracted))
-                {
-                    Thread.Sleep(2000);
-                    count++;
-                    goto label1;
 
-                }
-                string text = HttpUtility.HtmlDecode(extracted ?? string.Empty);
-
-
-
-                text = text.Replace("&quot;", "\"");
-                text = text.Replace("\\x26quot;", "\"");
-                text = text.Replace("\\x26#39;", "");
-                text = text.Replace("\\u003c", "<");
-                text = text.Replace("\\u003e", ">");
-                text = text.Replace("\\u0026#39;", "'");
-                text = text.Replace("\\u0026amp;", "&");
-                text = text.Replace("\\u0026quot;", "\"");
-                text = text.Replace("\\u0026apos;", "'");
-                text = text.Replace("\\u0026lt;", "<");
-                text = text.Replace("\\u0026gt;", ">");
-                text = text.Replace("\\u003d", "=");
-                text = text.Replace("\\u200b", string.Empty);
-
-                text = text.Replace("\\x3c", "<");
-                text = text.Replace("\\x3e", ">");
-                text = text.Replace("\\x26amp;", "&");
-                text = text.Replace("\\x26quot;", "\"");
-                text = text.Replace("\\x26apos;", "'");
-                text = text.Replace("\\x26lt;", "<");
-                text = text.Replace("\\x26gt;", ">");
-                text = text.Replace("\\x3d", "=");
-                text = text.Replace("\\x200b", string.Empty);
-                trtext = ReplaceOtherChar(text);
-                ti.output_text = ReplaceOtherChar(text);
-                ti.translit = string.Empty;
-                //temp = "id=src-translit class=translit";
-                //if (str.IndexOf(temp) != -1 && translit)
-                //{
-                //    ind = str.IndexOf(temp);
-                //    ind_last = str.IndexOf("</div>", ind + temp.Length);
-                //    startInd = ind + temp.Length;
-                //    text_leng = ind_last - startInd;
-                //    text = str.Substring(startInd, text_leng);
-                //    text = text.Substring(text.IndexOf(">")+1);
-                //    ti.translit = ReplaceOtherChar(text);
-                //}
-                return ti;
-            }
-            catch (Exception ex)
-            {
-                err = ex.Message;
-                istranslated = false;
-                return ti;
-            }
-        }
         /// <summary>
         /// Преобразует строку в Hex формат
         /// </summary>

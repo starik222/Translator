@@ -270,11 +270,8 @@ namespace Translator
         {
             if(string.IsNullOrWhiteSpace(name))
                 return name;
-            GoogleTrans.TranslateInfo ti = new GoogleTrans.TranslateInfo();
-            ti = gt.Translate(name, "ja", "en", true);
-            if (string.IsNullOrEmpty(ti.translit))
-                return "error";
-            return CompareAndReplace(ti.translit, otherChar);
+            string ti = gt.Translate(name, "ja", "en");
+            return CompareAndReplace(ti, otherChar);
 
         }
 
@@ -435,6 +432,12 @@ namespace Translator
 
         public string TranslateText(string text, string ToLang, bool UseReplaceText = true)
         {
+            return TranslateText(text, "ja", ToLang, UseReplaceText);
+        }
+
+
+        public string TranslateText(string text, string FromLang, string ToLang, bool UseReplaceText = true)
+        {
             string ntext = "";
             if (string.IsNullOrWhiteSpace(text))
                 return text;
@@ -448,7 +451,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -475,7 +478,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -491,7 +494,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -507,7 +510,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -521,7 +524,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, "ja", ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang);
                 }
                 catch (Exception ex)
                 {
@@ -549,14 +552,12 @@ namespace Translator
 
 
 
-        public GoogleTrans.TranslateInfo GoogleTranslate(string text, string from, string to)
+        public string GoogleTranslate(string text, string from, string to)
         {
-            GoogleTrans.TranslateInfo ti = new GoogleTrans.TranslateInfo();
             if (string.IsNullOrWhiteSpace(text))
-                return ti;
+                return text;
             text = CompareAndReplace(text, RepText);
-            ti = gt.Translate(text, from, to, true);
-            return ti;
+            return gt.Translate(text, from, to);
         }
 
 
@@ -928,6 +929,31 @@ namespace Translator
                 }
             }
             return lines.ToArray();
+        }
+
+        public string RemoveRepeatingChars(string text, int repeatCount)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            int rep = 0;
+            char c = (char)0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != c)
+                {
+                    c = text[i];
+                    stringBuilder.Append(text[i]);
+                    rep = 0;
+                }
+                else
+                {
+                    if (rep < repeatCount)
+                    {
+                        rep++;
+                        stringBuilder.Append(text[i]);
+                    }
+                }
+            }
+            return stringBuilder.ToString();
         }
 
 

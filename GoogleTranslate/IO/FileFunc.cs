@@ -7,13 +7,21 @@ using System.IO;
 
 namespace Translator.IO
 {
-    class FileFunc
+    public class FileFunc
     {
         public static object ReadStruct(Stream fs, Type t)
         {
             byte[] buffer = new byte[Marshal.SizeOf(t)];
             fs.Read(buffer, 0, Marshal.SizeOf(t));
             GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            Object temp = Marshal.PtrToStructure(handle.AddrOfPinnedObject(), t);
+            handle.Free();
+            return temp;
+        }
+
+        public static object RawDeserialize(byte[] data, Type t)
+        {
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
             Object temp = Marshal.PtrToStructure(handle.AddrOfPinnedObject(), t);
             handle.Free();
             return temp;
