@@ -59,7 +59,21 @@ namespace Translator
             return (CacheTrans.Lang)Enum.Parse(typeof(CacheTrans.Lang), nLang);
         }
 
-        public async Task<string> Translate(string str, string from, string to, bool caching)
+        public string Translate(string str, string from, string to, bool caching)
+        {
+            var t = TranslateAsync(str, from, to, caching);
+            t.Wait();
+            return t.Result;
+        }
+
+        public string Translate(string str, string from, string to)
+        {
+            var t = TranslateAsync(str, from, to);
+            t.Wait();
+            return t.Result;
+        }
+
+        public async Task<string> TranslateAsync(string str, string from, string to, bool caching)
         {
             if (caching && cache != null)
             {
@@ -69,7 +83,7 @@ namespace Translator
                 {
                     return res;
                 }
-                res = await Translate(str, from, to);
+                res = await TranslateAsync(str, from, to);
                 if (!res.Equals("error"))
                 {
                     cache.Add(str, res, "-0123456789-", lg);
@@ -82,11 +96,11 @@ namespace Translator
             }
             else
             {
-                return await Translate(str, from, to);
+                return await TranslateAsync(str, from, to);
             }
         }
 
-        public async Task<string> Translate(string str, string from, string to)
+        public async Task<string> TranslateAsync(string str, string from, string to)
         {
 
             //string val = string.Format(googleTemplateUrl, from, to, ConvertStringToHex(str, Encoding.UTF8));

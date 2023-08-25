@@ -45,7 +45,8 @@ namespace Translator
         public List<NAMES> names { get; set; }
         public List<NAMES> otherChar { get; set; }
         public List<NAMES> RepText { get; set; }
-        public GoogleTrans gt { get; set; }
+        //public GoogleTrans gt { get; set; }
+        public GoogleTranslatorV2 gt { get; set; }
         Dictionary<char, char> replacemant { get; set; }
         Dictionary<char, char> smartReplacemant { get; set; }
         public List<RepConst> Prefix;
@@ -74,7 +75,7 @@ namespace Translator
             Prefix.Add(new RepConst("さま", "-sama"));
             Prefix.Add(new RepConst("様", "-sama"));
             Prefix.Add(new RepConst("先輩", "-senpai"));
-            gt = new GoogleTrans(appPath);
+            gt = new GoogleTranslatorV2(appPath);
             names = new List<NAMES>();
             RepText = new List<NAMES>();
             otherChar = new List<NAMES>();
@@ -270,7 +271,7 @@ namespace Translator
         {
             if(string.IsNullOrWhiteSpace(name))
                 return name;
-            string ti = gt.Translate(name, "ja", "en");
+            var ti = gt.Translate(name, "ja", "en", true);
             return CompareAndReplace(ti, otherChar);
 
         }
@@ -292,12 +293,12 @@ namespace Translator
                 {
                     if (method == TransMethod.JaRu)
                     {
-                        ti = gt.Translate(text, "ja", "ru");
+                        ti = gt.Translate(text, "ja", "ru", true);
                     }
                     else if (method == TransMethod.JaEnRu)
                     {
-                        ti = gt.Translate(text, "ja", "en");
-                        ti = gt.Translate(ti, "en", "ru");
+                        ti = gt.Translate(text, "ja", "en", true);
+                        ti = gt.Translate(ti, "en", "ru", true );
                     }
                 }
                 catch (Exception ex)
@@ -328,12 +329,12 @@ namespace Translator
                 {
                     if (method == TransMethod.JaRu)
                     {
-                        ti = gt.Translate(text, "ja", "ru");
+                        ti = gt.Translate(text, "ja", "ru", true);
                     }
                     else if (method == TransMethod.JaEnRu)
                     {
-                        ti = gt.Translate(text, "ja", "en");
-                        ti = gt.Translate(ti, "en", "ru");
+                        ti = gt.Translate(text, "ja", "en", true);
+                        ti = gt.Translate(ti, "en", "ru", true);
                     }
                 }
                 catch (Exception ex)
@@ -352,12 +353,12 @@ namespace Translator
                 {
                     if (method == TransMethod.JaRu)
                     {
-                        ti = gt.Translate(text, "ja", "ru");
+                        ti = gt.Translate(text, "ja", "ru"  , true);
                     }
                     else if (method == TransMethod.JaEnRu)
                     {
-                        ti = gt.Translate(text, "ja", "en");
-                        ti = gt.Translate(ti, "en", "ru");
+                        ti = gt.Translate(text, "ja", "en", true);
+                        ti = gt.Translate(ti, "en", "ru", true);
                     }
                 }
                 catch (Exception ex)
@@ -376,12 +377,12 @@ namespace Translator
                 {
                     if (method == TransMethod.JaRu)
                     {
-                        ti = gt.Translate(text, "ja", "ru");
+                        ti = gt.Translate(text, "ja", "ru", true);
                     }
                     else if (method == TransMethod.JaEnRu)
                     {
-                        ti = gt.Translate(text, "ja", "en");
-                        ti = gt.Translate(ti, "en", "ru");
+                        ti = gt.Translate(text, "ja", "en", true);
+                        ti = gt.Translate(ti, "en", "ru", true);
                     }
                 }
                 catch (Exception ex)
@@ -398,12 +399,12 @@ namespace Translator
                 {
                     if (method == TransMethod.JaRu)
                     {
-                        ti = gt.Translate(text, "ja", "ru");
+                        ti = gt.Translate(text, "ja", "ru", true);
                     }
                     else if (method == TransMethod.JaEnRu)
                     {
-                        ti = gt.Translate(text, "ja", "en");
-                        ti = gt.Translate(ti, "en", "ru");
+                        ti = gt.Translate(text, "ja", "en", true );
+                        ti = gt.Translate(ti, "en", "ru", true);
                     }
                 }
                 catch (Exception ex)
@@ -451,7 +452,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, FromLang, ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -478,7 +479,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, FromLang, ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -494,7 +495,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, FromLang, ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -510,7 +511,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, FromLang, ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -524,7 +525,7 @@ namespace Translator
                 string ti = "";
                 try
                 {
-                    ti = gt.Translate(text, FromLang, ToLang);
+                    ti = gt.Translate(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -557,7 +558,7 @@ namespace Translator
             if (string.IsNullOrWhiteSpace(text))
                 return text;
             text = CompareAndReplace(text, RepText);
-            return gt.Translate(text, from, to);
+            return gt.Translate(text, from, to, true);
         }
 
 
@@ -581,7 +582,7 @@ namespace Translator
                     {
                         case TranslateService.Google:
                             {
-                                ti = gt.Translate(text, "ja", ToLang);
+                                ti = gt.Translate(text, "ja", ToLang, true);
                                 break;
                             }
                         case TranslateService.Microsoft:
@@ -620,7 +621,7 @@ namespace Translator
                     {
                         case TranslateService.Google:
                             {
-                                ti = gt.Translate(text, "ja", ToLang);
+                                ti = gt.Translate(text, "ja", ToLang, true);
                                 break;
                             }
                         case TranslateService.Microsoft:
@@ -648,7 +649,7 @@ namespace Translator
                     {
                         case TranslateService.Google:
                             {
-                                ti = gt.Translate(text, "ja", ToLang);
+                                ti = gt.Translate(text, "ja", ToLang, true);
                                 break;
                             }
                         case TranslateService.Microsoft:
@@ -676,7 +677,7 @@ namespace Translator
                     {
                         case TranslateService.Google:
                             {
-                                ti = gt.Translate(text, "ja", ToLang);
+                                ti = gt.Translate(text, "ja", ToLang, true);
                                 break;
                             }
                         case TranslateService.Microsoft:
@@ -702,7 +703,7 @@ namespace Translator
                     {
                         case TranslateService.Google:
                             {
-                                ti = gt.Translate(text, "ja", ToLang);
+                                ti = gt.Translate(text, "ja", ToLang, true);
                                 break;
                             }
                         case TranslateService.Microsoft:
