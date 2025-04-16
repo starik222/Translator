@@ -134,10 +134,10 @@ namespace TestTranslator
 
         private void button10_Click(object sender, EventArgs e)
         {
-            GoogleTranslator googleTranslator = new GoogleTranslator(Application.StartupPath);
-            Task<string> t = googleTranslator.Translate("test string (as test=word&car)", "en", "ru");
-            t.Wait();
-            string res = t.Result;
+            //GoogleTranslator googleTranslator = new GoogleTranslator(Application.StartupPath);
+            //Task<string> t = googleTranslator.Translate("test string (as test=word&car)", "en", "ru");
+            //t.Wait();
+            //string res = t.Result;
         }
     }
 }

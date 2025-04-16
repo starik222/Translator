@@ -21,6 +21,14 @@ namespace Translator
 
         }
 
+        public NAMES NewValue(string orig, string trans)
+        {
+            NAMES val = new NAMES();
+            val.orig_name = orig;
+            val.translit_name = trans;
+            return val;
+        }
+
         public List<NAMES> LoadDictonary(string dictPath, bool checkUnique = true)
         {
             List<NAMES> dict = new List<NAMES>();
@@ -53,6 +61,17 @@ namespace Translator
                 }
                 return dict;
             }
+        }
+
+        public List<NAMES> LoadDictonary(string[] lines)
+        {
+            List<NAMES> dict = new List<NAMES>();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                dict.Add(new NAMES(lines[i], splitChar));
+            }
+
+            return dict.Distinct(new NamesComparer()).ToList();
         }
 
         public NAMES FindItem(List<NAMES> dict, string original)
@@ -161,6 +180,42 @@ namespace Translator
         public string GetSplitterChar()
         {
             return splitChar;
+        }
+    }
+
+    class NamesComparer : IEqualityComparer<NAMES>
+    {
+        // Products are equal if their names and product numbers are equal.
+        public bool Equals(NAMES x, NAMES y)
+        {
+
+            //Check whether the compared objects reference the same data.
+            if (Object.ReferenceEquals(x, y)) return true;
+
+            //Check whether any of the compared objects is null.
+            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
+                return false;
+
+            //Check whether the products' properties are equal.
+            return x.orig_name == y.orig_name;
+        }
+
+        // If Equals() returns true for a pair of objects
+        // then GetHashCode() must return the same value for these objects.
+
+        public int GetHashCode(NAMES product)
+        {
+            //Check whether the object is null
+            if (Object.ReferenceEquals(product, null)) return 0;
+
+            //Get hash code for the Name field if it is not null.
+            int hashProductName = product.orig_name == null ? 0 : product.orig_name.GetHashCode();
+
+            //Get hash code for the Code field.
+            //int hashProductCode = product.Code.GetHashCode();
+
+            //Calculate the hash code for the product.
+            return hashProductName;
         }
     }
 }

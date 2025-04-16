@@ -83,7 +83,7 @@ namespace Translator
                 {
                     return res;
                 }
-                res = await TranslateAsync(str, from, to);
+                res = await TranslateAsync(str, from, to).ConfigureAwait(false);
                 if (!res.Equals("error"))
                 {
                     cache.Add(str, res, "-0123456789-", lg);
@@ -118,7 +118,6 @@ namespace Translator
             {
                 return "error";
             }
-
         }
 
         private string ReplaceOtherChar(string text)

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Threading;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Translator
 {
@@ -276,7 +277,7 @@ namespace Translator
 
         }
 
-
+        
         public string TranslateText(string text, TransMethod method)
         {
             string ntext = "";
@@ -436,6 +437,11 @@ namespace Translator
             return TranslateText(text, "ja", ToLang, UseReplaceText);
         }
 
+        public async Task<string> TranslateTextAsync(string text, string ToLang, bool UseReplaceText = true)
+        {
+            return await TranslateTextAsync(text, "ja", ToLang, UseReplaceText);
+        }
+
 
         public string TranslateText(string text, string FromLang, string ToLang, bool UseReplaceText = true)
         {
@@ -526,6 +532,120 @@ namespace Translator
                 try
                 {
                     ti = gt.Translate(text, FromLang, ToLang, true);
+                }
+                catch (Exception ex)
+                {
+                }
+                ti = ti.Replace("\"", "“");
+                ti = ti.Trim();
+                ntext = ti;
+            }
+            if (ntext == "error" || ntext == null)
+            {
+                int aa = 1;
+            }
+
+            for (int i = 0; i < otherChar.Count; i++)
+            {
+                ntext = ntext.Replace(otherChar[i].orig_name, otherChar[i].translit_name);
+            }
+            /* ntext = ntext.Replace(":", "");
+             ntext = ntext.Replace("~", "");
+             ntext = ntext.Replace("\\x3d", "＝");
+             ntext = ntext.Replace("...", "…");*/
+
+            return ntext;
+        }
+
+        public async Task<string> TranslateTextAsync(string text, string FromLang, string ToLang, bool UseReplaceText = true)
+        {
+            string ntext = "";
+            if (string.IsNullOrWhiteSpace(text))
+                return text;
+            //text = text.Replace(" ", "");
+            if (UseReplaceText)
+                text = CompareAndReplace(text, RepText);
+            if (text.Trim()[0] == '「' && text.Trim()[text.Trim().Length - 1] == '」')
+            {
+                //text = text.Trim().Remove(0, 1);
+                //text = text.Remove(text.Length - 1, 1);
+                string ti = "";
+                try
+                {
+                    ti = await gt.TranslateAsync(text, FromLang, ToLang, true);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                //ti = ti.Replace("\"", "");
+                //ti = ti.Trim();
+                //ntext = '「' + ti + '」';
+                if (ti.StartsWith("\"") && ti.EndsWith("\""))
+                {
+                    ti = '「' + ti + '」';
+                    ti = ti.Replace("\"", "");
+                }
+                ti = ti.Replace('«', '「');
+                ti = ti.Replace('»', '」');
+
+                ti = ti.Replace("\"", "“");
+                ntext = ti;
+            }
+            else if (text.Trim()[0] == '（' && text.Trim()[text.Trim().Length - 1] == '）')
+            {
+                text = text.Trim().Remove(0, 1);
+                text = text.Remove(text.Length - 1, 1);
+                string ti = "";
+                try
+                {
+                    ti = await gt.TranslateAsync(text, FromLang, ToLang, true);
+                }
+                catch (Exception ex)
+                {
+                }
+                ti = ti.Replace("\"", "“");
+                ti = ti.Trim();
+                ntext = '（' + ti + '）';
+            }
+            else if (text.Trim()[0] == '《' && text.Trim()[text.Trim().Length - 1] == '》')
+            {
+                text = text.Trim().Remove(0, 1);
+                text = text.Remove(text.Length - 1, 1);
+                string ti = "";
+                try
+                {
+                    ti = await gt.TranslateAsync(text, FromLang, ToLang, true);
+                }
+                catch (Exception ex)
+                {
+                }
+                ti = ti.Replace("\"", "“");
+                ti = ti.Trim();
+                ntext = '《' + ti + '》';
+            }
+            else if (text.Trim()[0] == '『' && text.Trim()[text.Trim().Length - 1] == '』')
+            {
+                text = text.Trim().Remove(0, 1);
+                text = text.Remove(text.Length - 1, 1);
+                string ti = "";
+                try
+                {
+                    ti = await gt.TranslateAsync(text, FromLang, ToLang, true);
+                }
+                catch (Exception ex)
+                {
+                }
+                ti = ti.Replace("\"", "“");
+                ti = ti.Trim();
+                ntext = '『' + ti + '』';
+            }
+            else
+            {
+                string ti = "";
+                try
+                {
+                    ti = await gt.TranslateAsync(text, FromLang, ToLang, true);
                 }
                 catch (Exception ex)
                 {
@@ -997,17 +1117,31 @@ namespace Translator
                 {
                     for (int j = 0; j < Prefix.Count; j++)
                     {
-                        if (str.IndexOf(names[i].orig_name + Prefix[j].orig) != -1)
+                        if (!names[i].IsRegex && str.IndexOf(names[i].orig_name + Prefix[j].orig) != -1)
                         {
                             str = str.Replace(names[i].orig_name + Prefix[j].orig, names[i].translit_name + Prefix[j].repl);
+
+                            replaced = true;
+                        }
+                        else if (names[i].IsRegex && Regex.IsMatch(str, names[i].orig_name + Prefix[j].orig))
+                        {
+                            str = Regex.Replace(str, names[i].orig_name + Prefix[j].orig, names[i].translit_name + Prefix[j].repl);
                             replaced = true;
                         }
                     }
-                    if (str.IndexOf(names[i].orig_name) != -1)
+                    if (!names[i].IsRegex && str.IndexOf(names[i].orig_name) != -1)
                     {
                         str = str.Replace(names[i].orig_name, names[i].translit_name);
+
                         replaced = true;
                     }
+                    else if (names[i].IsRegex && Regex.IsMatch(str, names[i].orig_name))
+                    {
+                        str = Regex.Replace(str, names[i].orig_name, names[i].translit_name);
+                        replaced = true;
+                    }
+
+
                     //for (int j = 0; j < Prefix.Count; j++)
                     //{
                     //    if (str.IndexOf(Prefix[j].orig) != -1)
@@ -1224,8 +1358,14 @@ namespace Translator
             get { return Trans; }
             set { Trans = value; }
         }
+        public bool IsRegex { get; set; } = false;
         public NAMES(string val, string splitter)
         {
+            if (val.StartsWith("R*"))
+            {
+                IsRegex = true;
+                val = val.Substring(2);
+            }
             int firstIndex = val.IndexOf(splitter);
             if (firstIndex == -1)
                 throw new Exception("Строка не содержит разделителя");
