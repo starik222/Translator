@@ -47,7 +47,7 @@ namespace Translator
         public List<NAMES> otherChar { get; set; }
         public List<NAMES> RepText { get; set; }
         //public GoogleTrans gt { get; set; }
-        public GoogleTranslatorV2 gt { get; set; }
+        public AbstractTranslator gt { get; set; }
         Dictionary<char, char> replacemant { get; set; }
         Dictionary<char, char> smartReplacemant { get; set; }
         public List<RepConst> Prefix;
@@ -60,8 +60,11 @@ namespace Translator
 
         private TranslationConfig _config;
 
+        private string _appPath;
+
         public TextTool(string appPath)
         {
+            _appPath = appPath;
             _config = new TranslationConfig();
             splitChar = _config.GetAppSetting("TextSplitter");
             ApplicationPath = appPath;
@@ -136,6 +139,18 @@ namespace Translator
             }
             smartChars = new List<char>();
             smartChars.AddRange(new char[] { '　', ' ', '|', '，', ',', '。', '.', '・' });
+        }
+
+        public void EnableBridgeTranslator(string bridgeUrl)
+        {
+            gt.Dispose();
+            gt = new BridgeTranslator(_appPath, bridgeUrl);
+        }
+
+        public void DisableBridgeTranslator()
+        {
+            gt.Dispose();
+            gt = new GoogleTranslatorV2(_appPath);
         }
 
         private List<NAMES> TestDictonary(List<NAMES> dict, string DictPath)

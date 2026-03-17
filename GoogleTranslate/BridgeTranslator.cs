@@ -1,43 +1,46 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Windows.Forms;
 using Translator.IO;
 
 namespace Translator
 {
-    public class GoogleTranslatorV2 : AbstractTranslator
+    public class BridgeTranslator : AbstractTranslator
     {
+
         private CacheTrans cache;
         private string ch_zero;
         private HttpClient client;
-        private const string googleTemplateUrl = "https://translate.google.com/m?hl=&sl={0}&tl={1}&ie=UTF-8&q={2}";
+        private string _bridgeUrl = "";
 
-        public GoogleTranslatorV2(string AppPath)
+        public BridgeTranslator(string AppPath, string bridgeUrl)
         {
+            _bridgeUrl = bridgeUrl;
             ch_zero = ((char)8203).ToString();
             cache = new CacheTrans(AppPath);
             client = new HttpClient();
-            //client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Mobile Safari/537.36");
             client.Timeout = new TimeSpan(0, 0, 10);
         }
 
-        public GoogleTranslatorV2()
+        public BridgeTranslator(string bridgeUrl)
         {
+            _bridgeUrl = bridgeUrl;
             ch_zero = ((char)8203).ToString();
             client = new HttpClient();
-            //client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0");
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Mobile Safari/537.36");
             client.Timeout = new TimeSpan(0, 0, 10);
         }
 
+
+        public override void Dispose()
+        {
+            cache.Close();
+            client.Dispose();
+        }
 
         public override string Translate(string str, string from, string to, bool caching)
         {
@@ -82,17 +85,24 @@ namespace Translator
 
         public override async Task<string> TranslateAsync(string str, string from, string to)
         {
-
-            //string val = string.Format(googleTemplateUrl, from, to, ConvertStringToHex(str, Encoding.UTF8));
-            string val = string.Format(googleTemplateUrl, from, to, str);
+            RequestData request = new RequestData();
+            request.FromLang = from;
+            request.ToLang = to;
+            request.Text = str;
             string data = null;
             try
             {
-                data = await client.GetStringAsync(val).ConfigureAwait(false);
-                String extracted = data.GetBetween("class=\"result-container\">", "</div>");//<div class="result-container">тестовая строка</div>
-                string text = HttpUtility.HtmlDecode(extracted ?? string.Empty);
-                text = text.Replace(ch_zero, "");
-                return ReplaceOtherChar(text) ?? "error";
+                data = await client.GetStringAsync(JsonConvert.SerializeObject(request)).ConfigureAwait(false);
+                var jData =  JsonConvert.DeserializeObject<ResponseData>(data);
+                if (jData.Success)
+                {
+                    string text = jData.TranslatedText;
+                    text = text.Replace(ch_zero, "");
+                    return ReplaceOtherChar(text) ?? "error";
+                }
+                else
+                    return "error";
+
             }
             catch (Exception)
             {
@@ -100,10 +110,21 @@ namespace Translator
             }
         }
 
-        public override void Dispose()
+        private class RequestData
         {
-            cache.Close();
-            client.Dispose();
+            public string FromLang { get; set; } = "ja";
+            public string ToLang { get; set; } = "ru";
+            public string Text { get; set; } = "";
+            public string Service { get; set; } = "";
+        }
+
+        private class ResponseData
+        {
+            public bool Success { get; set; } = false;
+            public string Error { get; set; } = "";
+            public string OriginalText { get; set; } = "";
+            public string TranslatedText { get; set; } = "";
+            public string Translit { get; set; } = "";
         }
     }
 }
